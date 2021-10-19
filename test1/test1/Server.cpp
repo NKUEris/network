@@ -2,6 +2,7 @@
 using namespace std;
 int main()
 {
-	string String = "OK";
+	string String = "OKasdasd";
 	cout << String;
+	return 0;
 }
