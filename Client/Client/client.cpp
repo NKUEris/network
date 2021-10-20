@@ -25,5 +25,5 @@ int main()
 	cout << "ÇëÊäÈëÄãµÄÃû×Ö£º";
 	cin.getline(clientName, 128);
 	connect(clientSocket, (SOCKADDR*)&serverAddr, sizeof(serverAddr));
-
+	return 0;
 }
