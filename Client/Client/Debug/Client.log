@@ -1,0 +1,4 @@
+﻿  client.cpp
+E:\NKU\network\Client\Client\client.cpp(22,28): error C2660: “htons”: 函数不接受 0 个参数
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\winsock.h(780,20): message : 参见“htons”的声明
+E:\NKU\network\Client\Client\client.cpp(23,1): error C2143: 语法错误: 缺少“;”(在“}”的前面)
