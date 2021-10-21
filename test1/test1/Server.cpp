@@ -27,7 +27,7 @@ int main()
 	unsigned port = 3484;								//端口号
 	SOCKADDR_IN serverAddr;
 	serverAddr.sin_family = AF_INET;
-	serverAddr.sin_port = htonl(port);
+	serverAddr.sin_port = htons(port);
 	serverAddr.sin_addr.S_un.S_addr = INADDR_ANY;		
 	if (bind(serverSocket, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)  //建立捆绑 
 	{
@@ -48,8 +48,8 @@ int main()
 	SOCKET clientSocket;
 	SOCKADDR_IN clientAddr;
 	int addrlen = sizeof(clientAddr);
-	clientSocket = accept(serverSocket, (SOCKADDR*)&clientAddr, &addrlen);
 	cout << "等待连接......" << endl;
+	clientSocket = accept(serverSocket, (SOCKADDR*)&clientAddr, &addrlen);
 	if (clientSocket == INVALID_SOCKET)
 	{
 		cout << "客户端连接失败!!!" << endl;
@@ -89,7 +89,7 @@ int main()
 		{
 			memset(buffer, 0, sizeof(buffer));
 			cout << serverName << ": ";
-			cin.getline(buffer, 1024);
+			cin >> buffer;
 			if (strcmp(buffer, "exit()") == 0)					//检测退出程序的关键词
 			{
 				cout << "程序即将退出" << endl;
