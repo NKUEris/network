@@ -1,1 +1,3 @@
-﻿  Client.vcxproj -> D:\杨光文\大三上\计算机网络\network\Client\Debug\Client.exe
+﻿  client.cpp
+E:\NKU\network\Client\Client\client.cpp(93,55): warning C4390: “;”: 找到空的受控语句；这是否是有意的?
+  Client.vcxproj -> E:\NKU\network\Client\Debug\Client.exe

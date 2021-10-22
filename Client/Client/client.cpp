@@ -2,8 +2,12 @@
 #include<winsock.h>
 #include<windows.h>
 #include<string>
+#include<string.h>
 #include<process.h>
+#include<time.h>
 # pragma comment(lib,"ws2_32.lib")
+#define TIME_MAX 64
+
 using namespace std;
 
 void threadReceive(PVOID param);
@@ -51,13 +55,25 @@ int main()
 	{
 		memset(buffer, 0, sizeof(buffer));
 		cout << "My：";
-		cin.getline(buffer,sizeof(buffer));
-		if (str_cmp(buffer, "exit()") == 0)
+		cin>>buffer;
+		if (strcmp(buffer, "exit()") == 0)
 		{
 			cout << "程序即将退出..." << endl;
-			closesocket(clientSocket);
+			send(clientSocket, buffer, sizeof(buffer), 0);
+			/*closesocket(clientSocket);*/
+			WSACleanup();
+			break;
 		}
 		send(clientSocket, buffer, sizeof(buffer), 0);
+		time_t now;
+		time(&now);
+		struct tm tmTmp;
+		char strTmp[TIME_MAX];
+		localtime_s(&tmTmp, &now);
+
+		//转化为字符串
+		asctime_s(strTmp, &tmTmp);
+		cout << strTmp;
 	}
 	closesocket(clientSocket);
 	WSACleanup();
@@ -74,9 +90,29 @@ void threadReceive(PVOID param)
 	while (true)
 	{
 		memset(buffer, 0, sizeof(buffer));
-		recv(clientSocket, buffer, sizeof(buffer), 0);
-		cout << endl << otherClientName << "：" << buffer;
-		cout << "   " << sys.wYear << "/" << sys.wMonth << "/" << sys.wDay << "/  " << sys.wHour << ":" << sys.wMinute << endl;
-		cout << "My：";
+		if(recv(clientSocket, buffer, sizeof(buffer), 0)!=0);
+		{
+			if (strcmp(buffer, "exit()") == 0)
+			{
+				cout <<endl<< "对方结束通信，请输入“exit()”退出程序" << endl<<"My：";
+				send(clientSocket, buffer, sizeof(buffer), 0);
+				/*closesocket(clientSocket);*/
+				WSACleanup();
+				ExitThread(0);
+				return ;
+			}
+			else
+			{
+				time_t now;
+				time(&now);
+				struct tm tmTmp;
+				char strTmp[TIME_MAX];
+				localtime_s(&tmTmp, &now);
+
+				//转化为字符串
+				asctime_s(strTmp, &tmTmp);
+				cout << endl << otherClientName << "：" << buffer << "   " << strTmp << "My：";
+			}
+		}
 	}
 }

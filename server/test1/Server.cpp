@@ -1,10 +1,12 @@
 #include<iostream>
 #include<string>
+#include<windows.h>
 #include<winsock.h>
 #include<process.h>
+#include<time.h>
 #pragma comment(lib,"ws2_32.lib")						//加载ws2_32.lib库
 
-
+#define TIME_MAX 64
 using namespace std;
 
 typedef struct serverClient
@@ -14,6 +16,7 @@ typedef struct serverClient
 	SOCKET clientSocket2;
 }CS;
 //服务端初始化
+
 void init(CS* cs);
 void createSocket(CS* cs);								//创建套接字
 void threadStart(CS* cs);								//调用线程
@@ -27,12 +30,11 @@ int main()
 {
 	CS Cs;
 	CS* cs = &Cs;
-	while (true)
-	{
+	
 		init(cs);
 		createSocket(cs);
 		threadStart(cs);
-	}
+	
 	closesocket(cs->serverSocket);
 	closesocket(cs->clientSocket1);
 	closesocket(cs->clientSocket2);
@@ -110,17 +112,31 @@ unsigned __stdcall threadReceive1(void* sc)
 	{
 		memset(buffer1, 0, sizeof(buffer1));
 
-		recv(cs->clientSocket1, buffer1, sizeof(buffer1), 0);
-		cout << clientName << "：" << buffer1 << endl;
-		if (strcmp(buffer1, "exit()") == 0)
+		if (recv(cs->clientSocket1, buffer1, sizeof(buffer1), 0) != 0)
 		{
-			cout << "程序即将退出..." << endl;
-			closesocket(cs->serverSocket);
-			closesocket(cs->clientSocket1);
-			closesocket(cs->clientSocket2);
-			break;
+			if (strcmp(buffer1, "exit()") == 0)
+			{
+				cout << "程序即将退出..." << endl;
+				send(cs->clientSocket2, buffer1, sizeof(buffer1), 0);
+				/*closesocket(cs->serverSocket);
+				closesocket(cs->clientSocket1);*/
+				ExitThread(0);
+				break;
+			}
+			else
+			{
+				time_t now;
+				time(&now);
+				struct tm tmTmp;
+				char strTmp[TIME_MAX];
+				localtime_s(&tmTmp, &now);
+
+				//转化为字符串
+				asctime_s(strTmp, &tmTmp);
+				cout << clientName << "：" << buffer1 <<"   "<<strTmp<< endl;
+				send(cs->clientSocket2, buffer1, sizeof(buffer1), 0);
+			}
 		}
-		send(cs->clientSocket2, buffer1, sizeof(buffer1), 0);
 	}
 	return 0;
 }
@@ -136,17 +152,33 @@ unsigned __stdcall threadReceive2(void* sc)
 	{
 		//清空缓存区
 		memset(buffer2, 0, sizeof(buffer2));
-		recv(cs->clientSocket2, buffer2, sizeof(buffer2), 0);
-		cout << clientName << "：" << buffer2 << endl;
-		if (strcmp(buffer1, "exit()") == 0)
+	
+		if (recv(cs->clientSocket2, buffer2, sizeof(buffer2), 0) != 0)
 		{
-			cout << "程序即将退出..." << endl;
-			closesocket(cs->serverSocket);
-			closesocket(cs->clientSocket1);
-			closesocket(cs->clientSocket2);
-			break;
+			if (strcmp(buffer2, "exit()") == 0)
+			{
+				cout << "程序即将退出..." << endl;
+				send(cs->clientSocket1, buffer2, sizeof(buffer2), 0);
+				/*closesocket(cs->serverSocket);
+				closesocket(cs->clientSocket1);
+				closesocket(cs->clientSocket2);*/
+				ExitThread(0);
+				return 0;
+			}
+			else
+			{
+				time_t now;
+				time(&now);
+				struct tm tmTmp;
+				char strTmp[TIME_MAX];
+				localtime_s(&tmTmp, &now);
+
+				//转化为字符串
+				asctime_s(strTmp, &tmTmp);
+				cout << clientName << "：" << buffer2 <<"   "<<strTmp<< endl;
+				send(cs->clientSocket1, buffer2, sizeof(buffer2), 0);
+			}
 		}
-		send(cs->clientSocket1, buffer2, sizeof(buffer2), 0);
 	}
 	return 0;
 }
