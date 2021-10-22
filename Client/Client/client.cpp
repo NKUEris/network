@@ -2,14 +2,18 @@
 #include<winsock.h>
 #include<windows.h>
 #include<string>
+#include<string.h>
 #include<process.h>
+#include<time.h>
 # pragma comment(lib,"ws2_32.lib")
+#define TIME_MAX 64
+
 using namespace std;
 
 void threadReceive(PVOID param);
 SOCKET clientSocket = INVALID_SOCKET;
 char clientName[128] = { 0 };
-
+char bufferGlobal[1024] = { 0 };
 int main()
 {
 	int port = 3484;
@@ -41,7 +45,7 @@ int main()
 	{
 		cout << "连接成功！" << endl;
 	}
-	char buffer[1024] = { 0 };
+	
 
 	//启动线程
 	_beginthread(threadReceive, 0, NULL);
@@ -49,17 +53,30 @@ int main()
 
 	while (1)
 	{
-		memset(buffer, 0, sizeof(buffer));
+		memset(bufferGlobal, 0, sizeof(bufferGlobal));
 		cout << "My：";
-		cin.getline(buffer,sizeof(buffer));
-		if (str_cmp(buffer, "exit()") == 0)
+		cin>>bufferGlobal;
+		if (strcmp(bufferGlobal, "exit()") == 0)
 		{
 			cout << "程序即将退出..." << endl;
-			closesocket(clientSocket);
+			send(clientSocket, bufferGlobal, sizeof(bufferGlobal), 0);
+			/*closesocket(clientSocket);*/
+			/*WSACleanup();*/
+			cout << "通信结束" << endl;
+			return 0;
 		}
-		send(clientSocket, buffer, sizeof(buffer), 0);
+			send(clientSocket, bufferGlobal, sizeof(bufferGlobal), 0);
+			time_t now;
+			time(&now);
+			struct tm tmTmp;
+			char strTmp[TIME_MAX];
+			localtime_s(&tmTmp, &now);
+
+			//转化为字符串
+			asctime_s(strTmp, &tmTmp);
+			cout << strTmp;
 	}
-	closesocket(clientSocket);
+	/*closesocket(clientSocket);*/
 	WSACleanup();
 	cout << "结束通信" << endl;
 	return 0;
@@ -71,12 +88,37 @@ void threadReceive(PVOID param)
 	char buffer[1024] = { 0 };
 	char otherClientName[128] = { 0 };
 	recv(clientSocket, otherClientName, sizeof(otherClientName), 0);
-	while (true)
+	while (1)
 	{
 		memset(buffer, 0, sizeof(buffer));
-		recv(clientSocket, buffer, sizeof(buffer), 0);
-		cout << endl << otherClientName << "：" << buffer;
-		cout << "   " << sys.wYear << "/" << sys.wMonth << "/" << sys.wDay << "/  " << sys.wHour << ":" << sys.wMinute << endl;
-		cout << "My：";
+		if(recv(clientSocket, buffer, sizeof(buffer), 0)!=0&&bufferGlobal!="exit()");
+		{
+			if (strcmp(buffer, "exit()") == 0)
+			{
+				cout <<endl<< "对方结束通信，请输入“exit()”退出程序" << endl<<"My：";
+
+				/*closesocket(clientSocket);*/
+				WSACleanup();
+				memset(buffer, 0, sizeof(buffer));
+				_endthread();
+				return ;
+			}
+			else
+			{
+				time_t now;
+				time(&now);
+				struct tm tmTmp;
+				char strTmp[TIME_MAX];
+				localtime_s(&tmTmp, &now);
+
+				//转化为字符串
+				asctime_s(strTmp, &tmTmp);
+
+				if (bufferGlobal != "exit()")
+				{
+					cout << endl << otherClientName << "：" << buffer << "   " << strTmp << "My：";
+				}
+			}
+		}
 	}
 }
