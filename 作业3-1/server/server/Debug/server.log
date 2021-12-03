@@ -1,0 +1,4 @@
+﻿  源.cpp
+E:\NKU\network\作业3-1\server\server\源.cpp(120,44): warning C4554: “<<”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
+E:\NKU\network\作业3-1\server\server\源.cpp(145,44): warning C4554: “<<”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
+  server.vcxproj -> E:\NKU\network\作业3-1\server\Debug\server.exe

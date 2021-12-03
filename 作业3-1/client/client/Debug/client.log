@@ -1,2 +1,7 @@
 ﻿  源.cpp
+E:\NKU\network\作业3-1\client\client\源.cpp(112,44): warning C4554: “<<”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
+E:\NKU\network\作业3-1\client\client\源.cpp(115,32): warning C4333: “>>”: 右移位数过大，数据将丢失
+E:\NKU\network\作业3-1\client\client\源.cpp(137,44): warning C4554: “<<”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
+E:\NKU\network\作业3-1\client\client\源.cpp(140,32): warning C4333: “>>”: 右移位数过大，数据将丢失
+E:\NKU\network\作业3-1\client\client\源.cpp(252,20): warning C4018: “<”: 有符号/无符号不匹配
   client.vcxproj -> E:\NKU\network\作业3-1\client\Debug\client.exe
